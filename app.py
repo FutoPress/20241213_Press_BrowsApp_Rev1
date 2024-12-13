@@ -140,34 +140,36 @@ def load_file():
         # Load1の波形を追加
         fig.add_trace(go.Scatter(
             x=time_data,
+            y=standard_waveform,
+            mode='lines',
+            name='Standard Waveform',
+            line=dict(color='lightgray', dash='dash')
+        ))
+
+        # Standard Waveformの波形を追加
+        fig.add_trace(go.Scatter(
+            x=time_data,
             y=load1_seg,
             mode='lines+markers',
             name='Load1',
             line=dict(color='blue'),
             marker=dict(
-                size=8,
+                size=5,
                 color=squared_errors,
                 colorscale='jet',
                 colorbar=dict(
                     title='Error',
+                    titleside='right',  # ラベルを横向きに表示
                     len=0.8,
                     yanchor='middle',
-                    y=0.5,
-                    x=1.1
+                    y=0.4,
+                    x=1.05
                 ),
                 cmin=0,
                 cmax=1.2e6
             )
         ))
 
-        # Standard Waveformの波形を追加
-        fig.add_trace(go.Scatter(
-            x=time_data,
-            y=standard_waveform,
-            mode='lines',
-            name='Standard Waveform',
-            line=dict(color='lightgray', dash='dash')
-        ))
 
         # グラフのレイアウトを設定
         set_graph_layout(fig, "time (ms)", "load force (N)", xaxis_range=[54, 56])

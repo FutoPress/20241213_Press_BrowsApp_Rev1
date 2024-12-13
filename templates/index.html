@@ -27,12 +27,13 @@
     <div id="fileList">
         Total Index: <span id="totalIndex"></span><br>
         File Path: <span id="filePath"></span><br>
-        Shot Number: <span id="shotNumber"></span>
+        Shot Number: <span id="shotNumber"></span><br>
+        <br>
     </div>
     <table style="width: 100%; border-collapse: collapse;">
         <tr>
-            <td style="border: 1px solid black; padding: 10px;">波形</td>
-            <td style="border: 1px solid black; padding: 10px;">トレーサー波形</td>
+            <td style="border: 1px solid black; padding: 10px; text-align: center;">計測波形</td>
+            <td style="border: 1px solid black; padding: 10px; text-align: center;">トレーサー波形</td>
         </tr>
         <tr>
             <td style="border: 1px solid black; padding: 10px; width: 50%;">
@@ -77,7 +78,7 @@
                       fileList.innerHTML = `
                           Total Index: ${data.file_index}<br>
                           File Path: ${data.file_path}<br>
-                          Shot Number: ${data.shot_num}
+                          Shot Number: ${data.shot_num}<br><br>
                       `;
                       
                       var graphDiv = document.getElementById('graphDiv');
