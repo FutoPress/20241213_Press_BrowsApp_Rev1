@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>波形表示</title>
+    <style>
+        .btn {
+            padding: 10px 20px;
+            font-size: 16px;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .btn-green {
+            background-color: green;
+        }
+        .btn-red {
+            background-color: red;
+        }
+    </style>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+    <h1>波形表示</h1>
+    <button id="toggleButton" class="btn btn-green">計測</button>
+    <div id="fileList">
+        Total Index: <span id="totalIndex"></span><br>
+        File Path: <span id="filePath"></span><br>
+        Shot Number: <span id="shotNumber"></span>
+    </div>
+    <table style="width: 100%; border-collapse: collapse;">
+        <tr>
+            <td style="border: 1px solid black; padding: 10px;">波形</td>
+            <td style="border: 1px solid black; padding: 10px;">トレーサー波形</td>
+        </tr>
+        <tr>
+            <td style="border: 1px solid black; padding: 10px; width: 50%;">
+                <div id="graphDiv" style="width: 100%;"></div>
+            </td>
+            <td style="border: 1px solid black; padding: 10px; width: 50%;">
+                <div id="tracerGraphDiv" style="width: 100%;"></div>
+            </td>
+        </tr>
+    </table>
+
+    <script>
+        let fileIndex = 0;
+
+        document.getElementById('toggleButton').addEventListener('click', function() {
+            var button = document.getElementById('toggleButton');
+            if (button.classList.contains('btn-green')) {
+                button.classList.remove('btn-green');
+                button.classList.add('btn-red');
+                button.textContent = '停止';
+                fileIndex = 0;
+                loadNextFile();
+            }
+        });
+
+        function loadNextFile() {
+            fetch('/load_file', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ file_index: fileIndex })
+            }).then(response => response.json())
+              .then(data => {
+                  if (data.end_flag) {
+                      var button = document.getElementById('toggleButton');
+                      button.classList.remove('btn-red');
+                      button.classList.add('btn-green');
+                      button.textContent = '計測';
+                  } else {
+                      var fileList = document.getElementById('fileList');
+                      fileList.innerHTML = `
+                          Total Index: ${data.file_index}<br>
+                          File Path: ${data.file_path}<br>
+                          Shot Number: ${data.shot_num}
+                      `;
+                      
+                      var graphDiv = document.getElementById('graphDiv');
+                      Plotly.react(graphDiv, JSON.parse(data.graph).data, JSON.parse(data.graph).layout);
+
+                      var tracerGraphDiv = document.getElementById('tracerGraphDiv');
+                      Plotly.react(tracerGraphDiv, JSON.parse(data.tracer_graph).data, JSON.parse(data.tracer_graph).layout);
+
+                      fileIndex++;
+                      setTimeout(loadNextFile, 500); // 0.5秒待つ
+                  }
+              });
+        }
+    </script>
+</body>
+</html>
